@@ -52,7 +52,7 @@ router
         });
       });
   })
-  .get(async (req, res) => {
+  .get(authMiddleware(3), async (req, res) => {
     let customers = await Customer.find();
     res.send(customers);
   });
@@ -182,7 +182,7 @@ router
   });
 
 router
-  .route('/:id')
+  .route('/single/:id')
   /**
    * Get Customer
    *
