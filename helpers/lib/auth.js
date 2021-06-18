@@ -27,7 +27,7 @@ module.exports = {
         .catch((err) => {
           if (err.code === 'ECONNREFUSED') {
             return res
-              .status(401)
+              .status(503)
               .json({ errors: [{ message: 'Auth Service is Unresponsive' }] });
           }
           return res
