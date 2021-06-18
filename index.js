@@ -11,8 +11,8 @@ app.use(cors());
 // Routes
 app.use('/', require('./routes'));
 
-app.get('/*', (req, res) => {
-  res.send('Hello World!');
+app.all('/*', function (req, res) {
+  return res.status(404).json({ errors: [{ message: 'Route Not Found' }] });
 });
 
 module.exports = app;
