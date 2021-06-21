@@ -115,3 +115,122 @@ test('Delete Single Customer', async () => {
   expect(singleCustomer.body).toBeInstanceOf(Object);
   expect(singleCustomer.body.success).toBe(true);
 });
+
+// Order Routes
+
+test('Fail to Create Customer Order with Invalid ObjectID', async () => {
+  let orderResponse = await request
+    .post('/order')
+    .type('form')
+    .send({
+      customer: '60cfdac7687ab25900586738s',
+      order: '60cfdac7687ab25900586738'
+    })
+    .set('Accept', /application\/json/);
+
+  expect(orderResponse.status).toBe(400);
+  expect(orderResponse.body).toBeInstanceOf(Object);
+  expect(orderResponse.body.errors[0].message).toBe('Bad Request');
+});
+
+test('Fail to Create Customer Order with Existing Order ObjectID', async () => {
+  let response = await request.get('/');
+
+  // Get Customer With Orders
+  let orderCustomer = response.body.filter((x) => {
+    return x.orders.length > 0;
+  })[0];
+
+  let orderResponse = await request
+    .post('/order')
+    .type('form')
+    .send({ customer: orderCustomer._id, order: orderCustomer.orders[0] })
+    .set('Accept', /application\/json/);
+
+  expect(orderResponse.status).toBe(400);
+  expect(orderResponse.body).toBeInstanceOf(Object);
+  expect(orderResponse.body.errors[0].message).toBe(
+    'Order Already Attached To Customer'
+  );
+});
+
+test('Fail to Delete Customer Order with Invalid ObjectID', async () => {
+  let orderResponse = await request
+    .delete('/order')
+    .type('form')
+    .send({
+      customer: '60cfdac7687ab25900586738s',
+      order: '60cfdac7687ab25900586738'
+    })
+    .set('Accept', /application\/json/);
+
+  expect(orderResponse.status).toBe(400);
+  expect(orderResponse.body).toBeInstanceOf(Object);
+  expect(orderResponse.body.errors[0].message).toBe('Bad Request');
+});
+
+test('Fail to Delete Customer Order with Unused Order ObjectID', async () => {
+  let response = await request.get('/');
+
+  // Get Customer With Orders
+  let orderCustomer = response.body[0];
+
+  let orderResponse = await request
+    .delete('/order')
+    .type('form')
+    .send({ customer: orderCustomer._id, order: '60cfdac7687ab25900586738' })
+    .set('Accept', /application\/json/);
+
+  expect(orderResponse.status).toBe(404);
+  expect(orderResponse.body).toBeInstanceOf(Object);
+  expect(orderResponse.body.errors[0].message).toBe('No Order Found');
+});
+
+test('Fail to Delete Customer Order with Unused Customer ObjectID', async () => {
+  let orderResponse = await request
+    .delete('/order')
+    .type('form')
+    .send({
+      customer: '60cfdac7687ab25900586738',
+      order: '60cfdac7687ab25900586738'
+    })
+    .set('Accept', /application\/json/);
+
+  expect(orderResponse.status).toBe(404);
+  expect(orderResponse.body).toBeInstanceOf(Object);
+  expect(orderResponse.body.errors[0].message).toBe('No Customer Found');
+});
+
+test('Create Customer Order', async () => {
+  let response = await request.get('/');
+
+  // Get Customer With Orders
+  let orderCustomer = response.body[0]._id;
+
+  let orderResponse = await request
+    .post('/order')
+    .type('form')
+    .send({ customer: orderCustomer, order: '60cfdac7687ab25900586738' })
+    .set('Accept', /application\/json/);
+
+  expect(orderResponse.status).toBe(200);
+  expect(orderResponse.body).toBeInstanceOf(Object);
+});
+
+test('Delete Customer Order', async () => {
+  let response = await request.get('/');
+
+  // Get Customer With Orders
+  let orderCustomer = response.body.filter((x) => {
+    return x.orders.length > 0;
+  })[0];
+
+  let orderResponse = await request
+    .delete('/order')
+    .type('form')
+    .send({ customer: orderCustomer._id, order: orderCustomer.orders[0] })
+    .set('Accept', /application\/json/);
+
+  expect(orderResponse.status).toBe(200);
+  expect(orderResponse.body).toBeInstanceOf(Object);
+});
