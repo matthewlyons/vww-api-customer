@@ -213,18 +213,7 @@ router
         .json({ errors: [{ message: 'No Customer Found' }] });
     }
 
-    let updatedCustomer = { ...customer, ...req, body };
-    updatedCustomer
-      .save()
-      .then((_) => {
-        res.json({ success: true });
-      })
-      .catch((err) => {
-        // TODO POST Request to Error service with request and err.
-        return res
-          .status(404)
-          .json({ errors: [{ message: 'No Customer Found' }] });
-      });
+    return res.json({ success: true });
   })
   /**
    * Delete Customer
