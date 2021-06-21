@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
+const Customer = require('../models/Customer');
+
 const mongod = new MongoMemoryServer();
 
 module.exports = {
@@ -24,5 +26,13 @@ module.exports = {
       const collection = collections[key];
       await collection.deleteMany();
     }
+  },
+  async populateDatabase() {
+    await Customer.insertMany([
+      { name: 'Kali' },
+      { name: 'Chuck' },
+      { name: 'Jessica' },
+      { name: 'Bill' }
+    ]);
   }
 };
