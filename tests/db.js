@@ -29,7 +29,7 @@ module.exports = {
   },
   async populateDatabase() {
     await Customer.insertMany([
-      { name: 'Kali' },
+      { name: 'Kali', orders: ['60cfdac7687ab25900586728'] },
       { name: 'Chuck' },
       { name: 'Jessica' },
       { name: 'Bill' }
